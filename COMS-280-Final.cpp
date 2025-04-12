@@ -370,7 +370,9 @@ public:
 	void winTheLottery() { balance = 9999999999.0f; }//Testing balance case
 
 	
-
+	void printPlainBalance() {
+		printf("\n======Account Balance======\nAccount Number : %s\nBalance :%.2f\n",identificationNumber.c_str(), balance);
+	}
 	virtual void printBalance() = 0;//Make this class abstract so it cannot be created
 
 	virtual void show() {
@@ -519,7 +521,7 @@ void transfer(Account* transferer, Account* transferee, T amount) {
 		transferer->balance -= amount;
 	}
 	else {
-		printf("%s does not have enough money to compelte this transaction!", transferer->identificationNumber);
+		printf("%s does not have enough money to complete this transaction!", transferer->identificationNumber.c_str());
 	}
 
 }
@@ -543,6 +545,7 @@ int main()
 	
 	ListSearcher<Person, int>* Searcher = new ListSearcher<Person, int>{};
 	
+
 	
 
 	LinkedList<Person>* list =  Searcher->searchList(personList,5);
@@ -552,6 +555,24 @@ int main()
 	Savings* savingsAccount = new Savings();
 	savingsAccount->balance = 500;
 	Credit* creditAccount = new Credit();
+
+	int integer = 10;
+	long longNum = 10L;
+	float floatingPoint = 10.00F;
+	double betterFloat = 10.00;
+
+
+	transfer(checkingAccount, savingsAccount, integer);
+	checkingAccount->printPlainBalance();
+
+	transfer(checkingAccount, savingsAccount, longNum);
+	checkingAccount->printPlainBalance();
+
+	transfer(checkingAccount, savingsAccount, floatingPoint);
+	checkingAccount->printPlainBalance();
+
+	transfer(checkingAccount, savingsAccount, betterFloat);
+	checkingAccount->printPlainBalance();
 
 	
 
