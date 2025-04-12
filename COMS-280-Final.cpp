@@ -56,7 +56,7 @@ public:
 };
 
 
-struct Transaction {
+struct Transaction {//object for storing transactions
 private:
 	float OriginalBalance;
 	float TransactionAmount;
@@ -68,22 +68,23 @@ private:
 
 public:
 
-	Transaction(float OriginalBalance, float TransactionAmount, std::string transfereeID, std::string notes)
+	Transaction(float OriginalBalance, float TransactionAmount, std::string transfereeID, std::string notes)//constructor that is called when a transaction is made	
 	:OriginalBalance(OriginalBalance), TransactionAmount(TransactionAmount),transfereeID(transfereeID),notes(notes){
 
 	}
 
-	void printTransaction() {
+	void printTransaction() {//for printing out the transactions when an account wishes to view them.
 		printf("Transaction Number : %s\n$%.2f -> %s\nNew balance : %.2f\nNotes : %s\n",TransactionID.c_str(), TransactionAmount, transfereeID.c_str(), OriginalBalance - TransactionAmount, notes.c_str());
 
 	}
 
-	bool isMe(std::string TransactionID) {
+	bool isMe(std::string TransactionID) {//for comparing transactions
 		if (TransactionID == this->TransactionID) {
 			return true;
 		}
 	}
 };
+
 
 
 template<class T>
@@ -176,53 +177,82 @@ class Person {
 private:
 	std::string address;
 	int customerID;
-	int ssn[9];//social security number
+	int ssn;
 
 	std::string password;
 
 	LinkedList<Account>* AccountList = new LinkedList<Account>();
 
 	//Contact details
-	int phonenumber[10];
+	std::string phoneNumber;
 	std::string emailAddress;
 
 public:
 	std::string firstName;
 	std::string lastName;
 	std::string middleName;
-	Person(std::string fName, std::string middleName, std::string lName, std::string homeAddress, std::string emailAddress, std::string password)
-		:firstName(fName), middleName(middleName), lastName(lName), address(homeAddress), emailAddress(emailAddress), password(password)
+	Person( std::string homeAddress, std::string emailAddress, std::string password):address(homeAddress), emailAddress(emailAddress), password(password)
 	{
-		customerID = 0;
-		for (int i = 0; i < 9; i++)
-		{
-			ssn[i] = i;
-		}
-		for (int i = 0; i < 10; i++)
-		{
-			phonenumber[i] = i;
-		}
 
-		/*
-		// To do later
-		printf("\n============ Finishing Touches ============");
-		printf("Please enter your social security number.");
-		std::string tempSSN;
-		bool
+		customerID = 0;
+
+		printf("\n============ Personal Details ============\n");
+		printf("Please enter your social security number.\n>>");
+		std::string tempSSN = std::string();
 		do {
 			std::cin >> tempSSN;
 			if (tempSSN.size() != 9)
 			{
-				std::cout << "Could not validate SSN, please reenter" << std::endl;;
+				std::cout << "A valid SSN should only contain 9 numbers!" << std::endl;
+				tempSSN = std::string();
 			}
-		}while(tempSSN.size() != 9)
-		try {
-			for (int i = 0; i < 9; i++)
-			{
+			else {
+				try {
+					ssn = std::stoi(tempSSN);
+				}
+				catch (std::invalid_argument exception) {
+					std::cout << "\nCould not validate SSN, please reenter." << std::endl;
+					tempSSN = std::string();
 
+				}
 			}
-		}
-		*/
+			
+		} while (tempSSN.size() != 9);
+
+		printf("\n===== Name ======");
+		std::string tempName = std::string();
+		bool validated = false;
+		char verification = '0';
+		do {
+			system("cls");
+			//First name
+			printf("Please enter your first name\n>>");
+			std::cin >> firstName;
+
+			//Middle name
+			printf("\nPlease enter your middle name\n>>");
+			std::cin >> middleName;
+
+			//Last name
+			printf("\nPlease enter your last name\n>>");
+			std::cin >> lastName;
+			
+			while (verification != 'y' && verification != 'n') {
+				std::cin.ignore();
+				system("cls");
+				printf("Is this correct?\n%s %s %s\nY or N >>", firstName.c_str(), middleName.c_str(), lastName.c_str());
+				verification = std::cin.get();
+			}
+			if (verification == 'y') {
+				validated = true;
+			}
+			else {
+				verification = '0';
+			}
+
+		} while (!validated);
+
+
 	}
 	Person() {
 		customerID = 0;
@@ -230,16 +260,23 @@ public:
 	}
 	Person(int id):customerID(id) {
 	}
-	bool isMe(int ID) {
+	bool isMe(int ID) {//compare the customerID
 		if (ID == customerID) {
 			return true;
 		}
 	}
-	bool isMe(std::string email) {
+	bool isMe(std::string email) {//compare the customers email
 		if (email == emailAddress) {
 			return true;
 		}
 	}
+	void printSSN() {
+		for (int i = 0; i < 9; i++) {
+
+		}
+		std::cout << "\n";
+	}
+	
 
 
 
@@ -291,6 +328,7 @@ public:
 		std::cout << "Overdraft protection is not available for this account!" << std::endl;
 	}
 
+
 	virtual void transfer(Account *toTransfer, float amount, std::string notes) {//A function for transferring money between accounts, this only needs to be overloaded if the balance needs special handling.
 		float originalBalance = balance;
 		if (this->balance >= amount) {
@@ -315,12 +353,13 @@ public:
 	virtual void printDetails() {
 		//to be implemented
 	}
-	void operator+=(Account *account) {//This overload is for combining accounts.
+	void operator+= (Account * account){//This overload is for combining accounts.
 		balance += account->balance;
 		std::cout << "rhs account will be closed" << std::endl;
 		account->~Account();
 		//Include account closing process
 	}
+
 
 	void operator-=(float value) {//This overload is for withdrawing from an account
 		balance -= value;
@@ -462,9 +501,34 @@ Person *login(std::string username, std::string ) {//Will, in the future, load c
 
 
 
+Person* createPerson() {
+	Person* person = new Person();
+
+
+	std::string tempName;
+	std::cout << "\nWelcome!\nThank you for choosing us for your finanical needs. Before we continue, please enter your full name!"<< std::endl << "First name : ";
+	std::cin >> tempName;
+
+	return new Person();
+	
+}
+template <class T>
+void transfer(Account* transferer, Account* transferee, T amount) {
+	if (transferer->balance >= amount) {
+		transferee->balance += amount;
+		transferer->balance -= amount;
+	}
+	else {
+		printf("%s does not have enough money to compelte this transaction!", transferer->identificationNumber);
+	}
+
+}
+
 int main()
 {
 	srand(time(0));
+
+
 
 
 	LinkedList<int>* ll_Int = new LinkedList<int>();
@@ -478,31 +542,17 @@ int main()
 	personList->Insert(andrew);
 	
 	ListSearcher<Person, int>* Searcher = new ListSearcher<Person, int>{};
-
+	
 	
 
 	LinkedList<Person>* list =  Searcher->searchList(personList,5);
-	std::cout << list->getHead()->getValue()->firstName;
+	std::cout << "Found object : " << list->getHead()->getValue()->firstName << std::endl;
 
 	Checkings* checkingAccount = new Checkings(1200);
 	Savings* savingsAccount = new Savings();
 	savingsAccount->balance = 500;
 	Credit* creditAccount = new Credit();
 
-
-	LinkedList<Account>* AccountList = new LinkedList<Account>();
-	AccountList->Insert(checkingAccount);
-	AccountList->Insert(savingsAccount);
-	AccountList->Insert(creditAccount);
-
-
-	AccountList->getHead()->getValue()->printBalance();
-	AccountList->getHead()->getNext()->getValue()->printBalance();
-	AccountList->getHead()->getNext()->getNext()->getValue()->printBalance();
-	AccountList->Delete(1);
-	AccountList->getHead()->getValue()->printBalance();
-	AccountList->getHead()->getNext()->getValue()->printBalance();
-	
 	
 
 
